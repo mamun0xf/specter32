@@ -1,0 +1,24 @@
+# ESP-IDF
+/build/
+*.elf
+*.map
+*.hex
+*.uf2
+
+# Managed components (restored by `idf.py reconfigure`)
+/managed_components/
+
+# Local config backup (sdkconfig itself is tracked on purpose)
+sdkconfig.old
+
+# Python
+__pycache__/
+*.py[cod]
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

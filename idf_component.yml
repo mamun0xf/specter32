@@ -1,0 +1,8 @@
+
+dependencies:
+  joltwallet/littlefs: "^1.10.1"
+  idf: ">=4.4.0"
+
+targets:
+  - esp32
+

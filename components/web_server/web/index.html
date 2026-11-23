@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specter32 &mdash; WiFi Security Auditor</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>Specter32</h1>
+        <span class="tagline">ESP32 WiFi Security Auditor</span>
+    </header>
+
+    <div class="ap-info-bar">
+        <strong>AP Status:</strong>
+        <span id="apName">Loading...</span> |
+        MAC: <span id="apMac">Loading...</span> |
+        Channel: <span id="apChannel">Loading...</span>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <button id="scanBtn" class="btn">Scan Networks</button>
+            <div id="networkList" class="network-list-container"></div>
+        </div>
+
+        <div id="controlsSection" class="section">
+            <div class="flex-container">
+                <div>
+                    <strong>Target:</strong> <span id="targetSSID">No target selected</span> <span id="targetBSSID"></span> |
+                    <strong>Channel:</strong> <span id="targetChannel">N/A</span>
+                </div>
+                <button id="scanClientsBtn" class="btn" disabled>Scan Clients</button>
+            </div>
+
+            <div id="clientList" class="client-list-container"></div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <!-- WiFi Repeater Section -->
+            <div class="flex-container">
+                <label>WiFi Repeater (<span id="routerStatusText">Idle</span>):</label>
+                <div class="capture-controls">
+                    <input type="password" id="routerPassword" placeholder="Password" style="width: 100px; padding: 5px; display: none;">
+                    <button id="routerConnectBtn" class="btn" disabled>Connect</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div class="flex-container" style="margin-top:15px;">
+                <label>Set AP Channel:</label>
+                <div>
+                    <select id="channelSelect" class="styled-select">
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                        <option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                        <option value="13">13</option><option value="14">14</option>
+                    </select>
+                    <button id="applyChannelBtn" class="btn">Apply</button>
+                </div>
+            </div>
+
+            <div class="flex-container">
+                <label>Deauthentication Attack:</label>
+                <div>
+                    <input type="hidden" id="deauthDurationSeconds" value="0">
+                    <button id="startDeauthBtn" class="btn" disabled>Start</button>
+                    <button id="stopDeauthBtn" class="btn hidden">Stop</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div>
+                <div class="flex-container">
+                    <label>Handshake Capture:</label>
+                    <div class="capture-controls-buttons">
+                        <button id="startCaptureBtn" class="btn" disabled>Start</button>
+                        <button id="stopCaptureBtn" class="btn hidden">Stop</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-container" style="margin-top: 10px;">
+                <label>PMKID Capture:</label>
+                <div class="capture-controls-buttons">
+                    <button id="startPmkidBtn" class="btn" disabled>Start</button>
+                    <button id="stopPmkidBtn" class="btn hidden">Stop</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div class="flex-container">
+                <label>Evil Twin:</label>
+                <div>
+                    <button id="startEvilTwinBtn" class="btn" disabled>Start</button>
+                    <button id="stopEvilTwinBtn" class="btn hidden">Stop</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div class="flex-container">
+                <label>Auto-Hunt Mode:</label>
+                <div class="capture-controls">
+                    <span style="font-size: 0.8em;">PMKID:</span>
+                    <input type="number" id="autoPmkidTime" value="5" min="1" max="60" style="width: 40px;" title="PMKID Time (s)">
+                    <span style="font-size: 0.8em;">HS:</span>
+                    <input type="number" id="autoHandshakeTime" value="10" min="1" max="120" style="width: 40px;" title="Handshake Time (s)">
+                    <button id="startAutoHuntBtn" class="btn">Start</button>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div class="flex-container">
+                <label>Beacon Flood Attack:</label>
+                <div class="capture-controls">
+                    <select id="beaconMode" class="styled-select" style="width: 80px;" title="Flood Mode">
+                        <option value="0">Custom</option>
+                        <option value="1">Clone</option>
+                        <option value="2">Random</option>
+                    </select>
+
+                    <input type="text" id="beaconSsid" placeholder="Prefix" value="ESP32" style="width: 80px;" title="SSID Prefix">
+
+                    <input type="number" id="beaconAmount" value="20" min="1" max="1000" style="width: 40px;" title="Amount / Count">
+
+                    <input type="hidden" id="beaconDuration" value="0">
+
+                    <button id="startBeaconBtn" class="btn">Start</button>
+                    <button id="stopBeaconBtn" class="btn hidden">Stop</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="flex-container">
+                <label>Filesystem Manager:</label>
+                <div>
+                    <button id="refreshFilesBtn" class="btn">Refresh</button>
+                    <button id="resetDeviceBtn" class="btn">Reset Data</button>
+                </div>
+            </div>
+            <div id="fileList"></div>
+        </div>
+
+        <div id="statusBar">Status: Idle</div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
